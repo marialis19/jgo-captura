@@ -5,6 +5,7 @@ function App() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const previousFrameRef = useRef<Uint8Array | null>(null);
 
   const [cameraActive, setCameraActive] = useState(false);
   const [error, setError] = useState("");
@@ -31,6 +32,28 @@ function App() {
 
   const imageData = context.getImageData(0, 0, width, height);
   const pixels = imageData.data;
+
+  const grayscale = new Uint8Array(width * height);
+
+  for (let i = 0, pixel = 0; i < pixels.length; i += 4, pixel++) {
+    grayscale[pixel] =
+      0.299 * pixels[i] +
+     0.587 * pixels[i + 1] +
+      0.114 * pixels[i + 2];
+  }
+
+  let temporalChange = 0;
+
+  if (previousFrameRef.current) {
+    for (let i = 0; i < grayscale.length; i++) {
+      temporalChange += Math.abs(
+        grayscale[i] - previousFrameRef.current[i]
+      );
+    }
+    temporalChange /= grayscale.length;
+  }
+  
+  previousFrameRef.current = grayscale;
 
   let brightness = 0;
 
@@ -95,7 +118,7 @@ function App() {
   const status = goodBrightness && goodSharpness ? "Bueno" : "Revisar";
 
   setFrameQuality(
-    `Nitidez: ${sharpness.toFixed(0)} · Brillo: ${brightness.toFixed(0)} · ${status}`
+    `Nitidez: ${sharpness.toFixed(0)} · Brillo: ${brightness.toFixed(0)} · Cambio: ${temporalChange.toFixed(1)} · ${status}`
   );
 };
 
@@ -136,6 +159,7 @@ function App() {
     streamRef.current?.getTracks().forEach((track) => track.stop());
 
     streamRef.current = null;
+
 
     if (videoRef.current) {
       videoRef.current.srcObject = null;
