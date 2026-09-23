@@ -194,6 +194,10 @@ function App() {
           muted
         />
         <canvas ref={canvasRef} hidden />
+
+        <div className="capture-guide">
+           <span>Ubicá el antebrazo dentro de esta zona</span>
+        </div> 
       </div>
 
       {cameraInfo && <p>{cameraInfo}</p>}

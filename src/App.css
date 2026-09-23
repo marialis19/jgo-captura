@@ -10,11 +10,27 @@ main {
 }
 
 .camera-container {
-  width: 100%;
-  margin: 24px 0;
-  overflow: hidden;
-  border-radius: 16px;
-  background: #111;
+  position: relative;
+}
+
+.capture-guide {
+  position: absolute;
+  inset: 12% 18%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(255, 255, 255, 0.9);
+  border-radius: 24px;
+  pointer-events: none;
+}
+
+.capture-guide span {
+  max-width: 220px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  font-size: 14px;
 }
 
 video {
